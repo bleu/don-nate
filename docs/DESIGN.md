@@ -49,6 +49,20 @@ it: donations would eventually settle to that same address (the proposal's Donat
 Attribution contract, out of scope here), so using it as the registry key now avoids a second
 identity system to reconcile later.
 
+## Listing/search is a plain on-chain list, not an indexer — for now
+
+`list_institutions` returns every distinct institution that ever got a report, and
+`get_reports_for_institution` returns that institution's full report history (including
+reports never approved, so a frontend can show "pending review" institutions, not just
+verified ones). This is a single growing `Vec` in contract storage, not events scanned by an
+indexer. That's the right tradeoff at PoC scale (few institutions) and the wrong one once the
+registry has many — revisit with a real indexer (mirroring the pattern `ens-marketplace` uses)
+once there's enough real usage to make that worth building.
+
+`name` on `VerificationReport` is self-reported and never authenticated — it exists so a
+listing has something human-readable to show and search over. The trust tier, not the name
+string, is what vouches for legitimacy.
+
 ## What's explicitly not here
 
 No MoneyGram, no Stellar Disbursement Platform, no SEP-12, no Donation Attribution contract,

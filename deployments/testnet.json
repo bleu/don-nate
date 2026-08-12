@@ -1,0 +1,17 @@
+{
+  "network": "testnet",
+  "networkPassphrase": "Test SDF Network ; September 2015",
+  "rpcUrl": "https://soroban-testnet.stellar.org",
+  "contracts": {
+    "institution-registry": {
+      "id": "CBTVW5WLVZYBOV4SYUOJLCHO6TD654K6T2KGHNABSJCQXH6HW5YRLLMR",
+      "wasmHash": "ec054aaa4acde8db9e59dccaae1684b05101ca06e0589863df40ef125bff7eaa",
+      "owner": "GDEYP5UE7TNE5P647X47357RWYKZSNYFQ3BZZCFQTFGHLFQC26HXCGAD",
+      "deployedAt": "2026-08-12"
+    }
+  },
+  "notes": [
+    "Owner is a testnet-only deployer key (contracts/institution-registry, alias don-nate-deployer) — not a production reviewer identity.",
+    "There is one seed entry on this deployment for smoke-testing: institution = the deployer address itself, name 'Smoke Test Foundation', tier 3. Harmless, but expect it to show up in any listing UI."
+  ]
+}

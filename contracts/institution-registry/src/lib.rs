@@ -19,7 +19,7 @@
 
 use soroban_sdk::{
     contract, contracterror, contractevent, contractimpl, contracttype, panic_with_error, Address,
-    Env, String,
+    Env, String, Vec,
 };
 use stellar_access::ownable::{set_owner, Ownable};
 use stellar_macros::only_owner;
@@ -57,16 +57,27 @@ pub enum DataKey {
     Report(u64),
     ReportCount,
     Institution(Address),
+    /// Every distinct institution that has ever had a report submitted, in submission
+    /// order. Lets a frontend list/search institutions without an indexer scanning events —
+    /// deliberately simple for a PoC at this scale; a real indexer is the right call once
+    /// this list grows large (see docs/DESIGN.md).
+    AllInstitutions,
+    /// All report IDs submitted for one institution, in submission order — lets a frontend
+    /// show an institution's full history, including reports not yet (or never) approved.
+    InstitutionReports(Address),
 }
 
 /// A verifier's real-world legitimacy check for one institution. Written by `submit_report`;
 /// never written to directly by anyone else. `evidence_uri` points off-chain (e.g. IPFS or a
 /// plain URL) — no institution or donor PII goes on-chain, matching proposal.md section 2.
+/// `name` is the institution's self-reported display name — informational only, never
+/// authenticated; the trust tier is what vouches for legitimacy, not the name string.
 #[contracttype]
 #[derive(Clone)]
 pub struct VerificationReport {
     pub verifier: Address,
     pub institution: Address,
+    pub name: String,
     pub evidence_uri: String,
     pub recommended_tier: u32,
     pub submitted_at: u64,
@@ -105,6 +116,7 @@ impl InstitutionRegistry {
         e: &Env,
         verifier: Address,
         institution: Address,
+        name: String,
         evidence_uri: String,
         recommended_tier: u32,
     ) -> u64 {
@@ -115,12 +127,30 @@ impl InstitutionRegistry {
         let report = VerificationReport {
             verifier: verifier.clone(),
             institution: institution.clone(),
+            name,
             evidence_uri,
             recommended_tier,
             submitted_at: e.ledger().timestamp(),
         };
         e.storage().persistent().set(&DataKey::Report(report_id), &report);
         e.storage().persistent().set(&DataKey::ReportCount, &(report_id + 1));
+
+        let mut institution_reports: Vec<u64> = e
+            .storage()
+            .persistent()
+            .get(&DataKey::InstitutionReports(institution.clone()))
+            .unwrap_or_else(|| Vec::new(e));
+        if institution_reports.is_empty() {
+            // First time we've seen this institution — add it to the enumerable list.
+            let mut all: Vec<Address> =
+                e.storage().persistent().get(&DataKey::AllInstitutions).unwrap_or_else(|| Vec::new(e));
+            all.push_back(institution.clone());
+            e.storage().persistent().set(&DataKey::AllInstitutions, &all);
+        }
+        institution_reports.push_back(report_id);
+        e.storage()
+            .persistent()
+            .set(&DataKey::InstitutionReports(institution.clone()), &institution_reports);
 
         ReportSubmitted { institution, verifier, report_id }.publish(e);
 
@@ -184,6 +214,23 @@ impl InstitutionRegistry {
     /// and evidence a reviewer relied on, not just trust the tier number blindly.
     pub fn get_report(e: &Env, report_id: u64) -> Option<VerificationReport> {
         e.storage().persistent().get(&DataKey::Report(report_id))
+    }
+
+    /// Every distinct institution that has ever had a report submitted, oldest first. A
+    /// frontend lists/searches by fetching this once, then `get_reports_for_institution` +
+    /// `get_institution` per address. See `DataKey::AllInstitutions` for why this is a plain
+    /// on-chain list rather than an indexer, at this PoC's scale.
+    pub fn list_institutions(e: &Env) -> Vec<Address> {
+        e.storage().persistent().get(&DataKey::AllInstitutions).unwrap_or_else(|| Vec::new(e))
+    }
+
+    /// All report IDs submitted for one institution, oldest first — includes reports never
+    /// approved, so a frontend can show "pending review" institutions, not just verified ones.
+    pub fn get_reports_for_institution(e: &Env, institution: Address) -> Vec<u64> {
+        e.storage()
+            .persistent()
+            .get(&DataKey::InstitutionReports(institution))
+            .unwrap_or_else(|| Vec::new(e))
     }
 }
 
