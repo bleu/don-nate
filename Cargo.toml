@@ -1,0 +1,26 @@
+[workspace]
+resolver = "2"
+members = [
+  "contracts/*",
+]
+
+[workspace.dependencies]
+# Pinned to 26.1.1, not the CLI's default 27, because OpenZeppelin's stellar-access
+# (the audited access-control crate this project depends on for the reviewer/owner role)
+# only supports soroban-sdk ^26.1.0 as of its latest release (0.7.2). See ADR-0001.
+soroban-sdk = "=26.1.1"
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true
+
+# For more information about this profile see https://developers.stellar.org/docs/build/smart-contracts/example-contracts/logging#cargotoml-profile
+[profile.release-with-logs]
+inherits = "release"
+debug-assertions = true
