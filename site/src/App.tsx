@@ -1,0 +1,23 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { WalletProvider } from "./lib/WalletContext";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import { Home } from "./pages/Home";
+import { Register } from "./pages/Register";
+import { Browse } from "./pages/Browse";
+
+export default function App() {
+  return (
+    <WalletProvider>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/browse" element={<Browse />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </WalletProvider>
+  );
+}

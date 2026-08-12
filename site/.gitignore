@@ -1,0 +1,33 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# The generated contract bindings' build output IS committed on purpose — it's tied to one
+# specific testnet deployment (regenerating needs network access to `stellar contract
+# bindings typescript`), and our app imports directly from it. See docs/DESIGN.md.
+!/src/contracts/**/dist
+
+# Cypress local run artifacts
+cypress/videos
+cypress/screenshots
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

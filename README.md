@@ -9,6 +9,9 @@ the design that isn't about moving money: how an institution gets a trust tier w
 on-chain, who's allowed to write it, and how that can be traced back to whoever actually did
 the verification work. See [`docs/DESIGN.md`](docs/DESIGN.md) for the reasoning.
 
+**Live on Stellar testnet**, with a working frontend — see [`site/`](site/). Contract ID and
+network details in [`deployments/testnet.json`](deployments/testnet.json).
+
 ## What this is
 
 Two roles, kept distinct on purpose even though this PoC has the same address fill both today:
@@ -30,17 +33,21 @@ unmaintained claim.
 
 ```
 contracts/institution-registry/   The one contract. src/lib.rs is the implementation,
-                                   src/test.rs is the test suite (7 tests, run with
-                                   `cargo test`).
+                                   src/test.rs is the test suite, run with `cargo test`.
+site/                              React app — landing page, registry browser + search,
+                                   report-submission form. See site/README.md.
+deployments/testnet.json          Contract ID and network config for the current testnet
+                                   deployment.
 docs/DESIGN.md                    Why it's built this way — role split, storage choices,
-                                   the soroban-sdk version pin.
+                                   the soroban-sdk version pin, listing/search tradeoffs.
 ```
 
 ## Development
 
 ```shell
-cargo test              # run the test suite
+cargo test              # run the contract's test suite
 stellar contract build  # compile to WASM (target/wasm32v1-none/release/institution_registry.wasm)
+cd site && npm install && npm run dev  # the frontend, http://localhost:5173
 ```
 
 ## Links
