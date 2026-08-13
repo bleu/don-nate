@@ -31,3 +31,4 @@ cypress/screenshots
 *.njsproj
 *.sln
 *.sw?
+.vercel
