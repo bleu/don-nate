@@ -13,6 +13,9 @@ backend of its own.
 - Typed contract bindings generated via `stellar contract bindings typescript` — see
   `src/contracts/institution-registry/`. Its `dist/` build output is committed on purpose
   (see `../docs/DESIGN.md`) so building this app never needs network access to testnet.
+- `src/lib/anchor.ts` — a real SEP-10 + SEP-24 client (uses `@stellar/stellar-sdk`'s
+  `WebAuth`/`StellarToml` helpers), pointed at Stellar's public test anchor rather than
+  MoneyGram directly. See `../docs/DESIGN.md` for why.
 
 ## Development
 
@@ -35,6 +38,9 @@ the comment at the top of that file if testnet state ever needs reseeding.
   wallet needed), with client-side search by name or address.
 - `/register` — submit a verification report. Requires a connected wallet, since the report
   is signed by the verifier submitting it.
+- `/donate` — donate to a verified institution. Requires a connected wallet: deposits USDC via
+  a SEP-24 anchor into the donor's own wallet, then the donor signs a payment forwarding it
+  on-chain to the institution.
 
 ## Regenerating the contract bindings
 

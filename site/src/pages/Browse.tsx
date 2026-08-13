@@ -1,63 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { readOnlyClient } from "../lib/contractClient";
 import { truncateAddress, formatDate } from "../lib/format";
-import type { InstitutionRecord, VerificationReport } from "../contracts/institution-registry/dist/index.js";
-
-interface InstitutionListItem {
-  address: string;
-  latestReport: VerificationReport | null;
-  record: InstitutionRecord | null;
-  verified: boolean;
-}
+import { useInstitutions } from "../lib/useInstitutions";
 
 export function Browse() {
   const [params] = useSearchParams();
   const justSubmitted = params.get("justSubmitted");
 
-  const [items, setItems] = useState<InstitutionListItem[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { items, error } = useInstitutions();
   const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const client = readOnlyClient();
-        const { result: addresses } = await client.list_institutions();
-
-        const loaded = await Promise.all(
-          addresses.map(async (address): Promise<InstitutionListItem> => {
-            const { result: reportIds } = await client.get_reports_for_institution({ institution: address });
-            const lastId = reportIds.length > 0 ? reportIds[reportIds.length - 1] : null;
-
-            const [reportRes, recordRes, verifiedRes] = await Promise.all([
-              lastId !== null ? client.get_report({ report_id: lastId }) : Promise.resolve(null),
-              client.get_institution({ institution: address }),
-              client.is_verified({ institution: address }),
-            ]);
-
-            return {
-              address,
-              latestReport: reportRes ? reportRes.result ?? null : null,
-              record: recordRes.result ?? null,
-              verified: verifiedRes.result,
-            };
-          }),
-        );
-
-        if (!cancelled) setItems(loaded);
-      } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const filtered = useMemo(() => {
     if (!items) return [];

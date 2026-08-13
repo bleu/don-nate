@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
+import logoUrl from "../assets/logo.png";
 
 export function Home() {
   return (
     <div className="wrap">
-      <section className="hero" style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 56, alignItems: "center", padding: "48px 0 96px" }}>
+      <section className="hero" style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 56, alignItems: "center", padding: "48px 0 72px" }}>
         <div>
           <p className="eyebrow">Stellar SCF #45 — Integration Track</p>
           <h1 style={{ fontSize: "clamp(2.3rem, 4vw, 3.4rem)", lineHeight: 1.12, maxWidth: "15ch" }}>
-            Trust that travels <span style={{ color: "var(--stamp)" }}>with the money.</span>
+            Trust that travels <span style={{ color: "var(--stamp)", fontStyle: "italic" }}>with the money.</span>
           </h1>
           <p style={{ maxWidth: "46ch", color: "var(--ink-soft)", fontSize: "1.12rem", marginTop: 22 }}>
             Don Nate is a public, on-chain registry recording which institutions have been
@@ -20,7 +21,13 @@ export function Home() {
           </div>
         </div>
 
-        <div>
+        <div className="hero-art">
+          <img src={logoUrl} alt="Don Nate" className="hero-logo" />
+        </div>
+      </section>
+
+      <section className="tight" style={{ display: "flex", justifyContent: "center", paddingTop: 0 }}>
+        <div style={{ maxWidth: 420, width: "100%" }}>
           <div className="ledger-card">
             <span className="stamp-badge">Verified</span>
             <div className="ledger-head">
@@ -54,7 +61,7 @@ export function Home() {
               </div>
             </dl>
           </div>
-          <p className="card-caption">Illustrative — see the real registry under "Browse."</p>
+          <p className="card-caption" style={{ textAlign: "center" }}>Illustrative — see the real registry under "Browse."</p>
         </div>
       </section>
 
@@ -116,11 +123,16 @@ export function Home() {
             <span className="num">03</span>
             <h3>Give</h3>
             <p>
-              A donor browses the registry, picks one institution or a self-defined basket of
-              several, and donates — settlement runs on MoneyGram and the Stellar Disbursement
-              Platform.
+              A donor picks a verified institution and pays in their own currency — a MoneyGram
+              on-ramp turns it into USDC in their wallet, which they then send on-chain
+              themselves.
             </p>
             <span className="role">Donor — on Stellar</span>
+            <div style={{ marginTop: 14 }}>
+              <Link className="btn secondary" to="/donate" style={{ padding: "8px 16px", fontSize: "0.78rem" }}>
+                Try it
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -132,7 +144,9 @@ export function Home() {
             This is a new vertical for Bleu, currently a working proof of concept ahead of a
             <strong> Stellar Community Fund #45</strong> submission. The registry contract is
             live on <strong>Stellar testnet</strong> — try it under "Browse" or "Register." The
-            payment rails (MoneyGram, Stellar Disbursement Platform) aren't wired up in this PoC.
+            donation flow under "Donate" runs the real MoneyGram on-ramp protocol against
+            Stellar's public test anchor, since MoneyGram itself hasn't approved Bleu's partner
+            access yet.
           </p>
         </div>
       </section>

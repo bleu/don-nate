@@ -63,8 +63,32 @@ once there's enough real usage to make that worth building.
 listing has something human-readable to show and search over. The trust tier, not the name
 string, is what vouches for legitimacy.
 
+## The donate flow points at Stellar's test anchor, not MoneyGram directly
+
+`/donate` implements the real MoneyGram Ramps integration surface — SEP-10 authentication and
+a SEP-24 interactive deposit — but points the client at `testanchor.stellar.org`,
+Stellar's own public reference anchor, instead of MoneyGram's actual endpoints. MoneyGram
+Ramps requires partner-portal approval and key allowlisting before any sandbox access is
+granted; there's no open testnet a wallet can hit without that first. Both speak the identical
+protocol, so once Bleu is approved, swapping in MoneyGram is a change to the home domain
+constant in `site/src/lib/anchor.ts`, not a rewrite of the SEP-10/SEP-24 client.
+
+Mechanically, a deposit doesn't hand USDC directly to the institution — SEP-24 always credits
+the *authenticated donor's own account*. The donate flow is genuinely two on-chain steps: (1)
+the donor deposits cash off-chain and the anchor sends USDC to the donor's own Stellar wallet,
+then (2) the donor's wallet signs an ordinary payment sending that USDC on to the institution's
+address. Both steps are real, signed, submitted transactions — nothing here is simulated. The
+donor's wallet needs a USDC trustline before step 1 (the test anchor doesn't support
+`claimable_balances` or `account_creation`, so it can't work around a missing one), and the
+institution's wallet needs a USDC trustline before step 2, or the payment fails outright — the
+UI checks and surfaces both explicitly rather than surfacing Horizon's raw error.
+
+Donations are restricted to institutions with an approved trust tier (`is_verified`) — donating
+to an unreviewed institution would undercut the entire premise of the registry.
+
 ## What's explicitly not here
 
-No MoneyGram, no Stellar Disbursement Platform, no SEP-12, no Donation Attribution contract,
-no donor-facing app. This PoC is scoped to the registry and verification mechanism only, per
-explicit instruction — those pieces are designed in the proposal but not built here.
+No Stellar Disbursement Platform, no SEP-12, no Donation Attribution contract, no basket/split
+donations across multiple institutions. Those remain designed in the proposal but not built
+here — this PoC's payment surface is deliberately just the MoneyGram on-ramp plus a direct
+wallet-to-wallet transfer, not the full disbursement architecture.

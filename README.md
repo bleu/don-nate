@@ -3,11 +3,14 @@
 A Soroban PoC for the on-chain institution trust registry described in Bleu's SCF #45 grant
 proposal (`bleu-brain`'s `bleu/reference/grants/stellar-scf-45/donation-trust-registry/`).
 
-**Scope: registry + verification mechanism only.** Deliberately no MoneyGram, no Stellar
-Disbursement Platform, no SEP-12, no payment flow — this PoC exists to prove out the part of
-the design that isn't about moving money: how an institution gets a trust tier written
-on-chain, who's allowed to write it, and how that can be traced back to whoever actually did
-the verification work. See [`docs/DESIGN.md`](docs/DESIGN.md) for the reasoning.
+**Scope: registry, verification, and a real MoneyGram-protocol on-ramp.** This PoC's core is
+proving out the part of the design that isn't about moving money: how an institution gets a
+trust tier written on-chain, who's allowed to write it, and how that can be traced back to
+whoever actually did the verification work. It also includes a working donate flow — real
+SEP-10/SEP-24 client code, run against Stellar's public test anchor since MoneyGram itself
+gates sandbox access behind partner approval. Still deliberately no Stellar Disbursement
+Platform, no SEP-12, no basket donations. See [`docs/DESIGN.md`](docs/DESIGN.md) for the
+reasoning.
 
 **Live on Stellar testnet**, with a working frontend — see [`site/`](site/). Contract ID and
 network details in [`deployments/testnet.json`](deployments/testnet.json).

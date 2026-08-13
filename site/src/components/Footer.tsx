@@ -8,9 +8,6 @@ export function Footer() {
             <span>
               Don Nate — a project by <a href="https://bleu.builders">Bleu</a>
             </span>
-            <span>
-              <a href="mailto:luizhatem@bleu.studio">luizhatem@bleu.studio</a>
-            </span>
           </div>
         </footer>
       </div>

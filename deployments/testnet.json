@@ -12,6 +12,7 @@
   },
   "notes": [
     "Owner is a testnet-only deployer key (contracts/institution-registry, alias don-nate-deployer) — not a production reviewer identity.",
-    "There is one seed entry on this deployment for smoke-testing: institution = the deployer address itself, name 'Smoke Test Foundation', tier 3. Harmless, but expect it to show up in any listing UI."
+    "There is one seed entry on this deployment for smoke-testing: institution = the deployer address itself, name 'Smoke Test Foundation', tier 3. Harmless, but expect it to show up in any listing UI.",
+    "That same deployer/institution address holds a testnet USDC trustline (issuer GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5, from testanchor.stellar.org's stellar.toml), added specifically so the /donate flow has a real institution wallet that can receive a forwarded USDC payment end-to-end."
   ]
 }

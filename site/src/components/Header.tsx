@@ -8,7 +8,7 @@ export function Header() {
   return (
     <header className="site">
       <Link to="/" className="wordmark">
-        Don <em>Nate</em>
+        <span className="wordmark-mark">&#10022;</span> Don <em>Nate</em>
       </Link>
       <nav className="site">
         <NavLink to="/browse" className={({ isActive }) => (isActive ? "active" : "")}>
@@ -16,6 +16,9 @@ export function Header() {
         </NavLink>
         <NavLink to="/register" className={({ isActive }) => (isActive ? "active" : "")}>
           Register
+        </NavLink>
+        <NavLink to="/donate" className={({ isActive }) => (isActive ? "active" : "")}>
+          Donate
         </NavLink>
         {address ? (
           <button className="link" onClick={() => void disconnect()} title={address}>
